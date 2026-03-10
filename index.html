@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Вебинар</title>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
-<script type="text/javascript" src="https://cdn.embed.ly/player-0.1.0.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -52,32 +51,6 @@ body::before {
 }
 .video-wrap iframe { position: absolute; top:0; left:0; width:100%; height:100%; border:0; }
 
-/* Timed banner styles */
-.banner-container {
-  display: none; width: 100%;
-  animation: bannerIn 0.4s ease-out;
-}
-.banner-container.active { display: block; }
-.banner-container a { display: block; text-decoration: none; }
-.banner-container img {
-  width: 100%; border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(233, 30, 99, 0.25);
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.banner-container img:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(233, 30, 99, 0.4);
-}
-.banner-timer {
-  text-align: center; margin-top: 8px;
-  font-family: "Golos Text", sans-serif; font-size: 13px;
-  color: rgba(232,228,220,0.5);
-}
-@keyframes bannerIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 @media (max-width: 900px) {
   .main { padding: 16px; }
   .header { padding: 14px 16px; }
@@ -94,121 +67,28 @@ body::before {
 </div>
 
 <div class="page-title-bar">
-  <span class="page-title-text">Интенсив <span>«Деньги или Жизнь»</span>. День 4</span>
+  <span class="page-title-text"><span>«Деньги или Жизнь»</span>. Встреча с терапевтами</span>
 </div>
 
 <div class="main">
   <div class="video-col">
     <div class="video-wrap">
       <iframe id="kplayer"
-        src="https://kinescope.io/embed/udrRoVgdALCj6poWWsyDvj?autoplay=0"
+        src="https://kinescope.io/embed/cGXzSfG8qNRkjC6z1jX6yJ?autoplay=0"
         allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write;"
         allowfullscreen>
       </iframe>
     </div>
-    <!-- Баннеры появляются здесь по таймингам видео -->
-    <div id="timed-banners"></div>
+    <div style="display:flex; flex-direction:column; gap:12px; margin-top:20px;">
+      <a href="https://leonidtalpis.com/mvs-seminar?utm_source=zoom090326&utm_campaign=marathon050326&utm_term=web090326" target="_blank" style="display:block; text-decoration:none;">
+        <img src="https://cdn.bizon365.ru/181751/mirovozzrenka__3_.png" alt="Мировоззренческий семинар" style="width:100%; border-radius:12px; box-shadow:0 4px 24px rgba(233,30,99,0.25); transition:transform 0.15s, box-shadow 0.15s;">
+      </a>
+      <a href="https://leonidtalpis.com/the_assembly_point/payment?utm_source=zoom090326&utm_campaign=marathon050326&utm_term=web090326" target="_blank" style="display:block; text-decoration:none;">
+        <img src="https://cdn.bizon365.ru/181751/ts__3_.png" alt="Точка Сборки" style="width:100%; border-radius:12px; box-shadow:0 4px 24px rgba(233,30,99,0.25); transition:transform 0.15s, box-shadow 0.15s;">
+      </a>
+    </div>
   </div>
 </div>
 
-<script>
-// ============================
-// Сценарий баннеров (из JSON)
-// ============================
-var bannerScenario = [
-  {timeshift:1268000, image:"https://cdn.bizon365.ru/181751/mirovozzrenka__3_.png", url:"https://leonidtalpis.com/mvs-seminar?utm_source=zapis&utm_campaign=marathon050326&utm_term=web060326", timer:0},
-  {timeshift:2751000, image:"", url:""},
-  {timeshift:2752000, image:"https://cdn.bizon365.ru/181751/ts__3_.png", url:"https://leonidtalpis.com/the_assembly_point/payment?utm_source=zapis&utm_campaign=marathon050326&utm_term=web060326", timer:0},
-  {timeshift:2900000, image:"", url:""},
-  {timeshift:2901000, image:"https://cdn.bizon365.ru/181751/mirovozzrenka__3_.png", url:"https://leonidtalpis.com/mvs-seminar?utm_source=zapis&utm_campaign=marathon050326&utm_term=web060326", timer:0}
-];
-
-var bannerContainer = document.getElementById('timed-banners');
-var currentActiveBanner = null;
-
-function formatCountdown(sec) {
-  var m = Math.floor(sec / 60);
-  var s = sec % 60;
-  return (m > 0 ? m + ' мин ' : '') + s + ' сек';
-}
-
-function showBannerEl(item, timeLeftSec) {
-  currentActiveBanner = item;
-  bannerContainer.innerHTML =
-    '<div class="banner-container active">' +
-      '<a href="' + item.url + '" target="_blank">' +
-        '<img src="' + item.image + '" alt="Баннер">' +
-      '</a>' +
-    '</div>';
-}
-
-function hideBannerEl() {
-  currentActiveBanner = null;
-  bannerContainer.innerHTML = '';
-}
-
-function updateCountdown(timeLeftSec) {
-  var el = document.getElementById('bl-timer');
-  if (el) el.textContent = formatCountdown(timeLeftSec);
-}
-
-function evaluateBannersAtTime(currentTimeSec) {
-  var currentTimeMs = currentTimeSec * 1000;
-
-  // Найти последнее событие, которое уже должно было сработать
-  var active = null;
-  for (var i = bannerScenario.length - 1; i >= 0; i--) {
-    if (currentTimeMs >= bannerScenario[i].timeshift) {
-      active = bannerScenario[i];
-      break;
-    }
-  }
-
-  // Если ничего не найдено или это команда "скрыть"
-  if (!active || !active.image || !active.url) {
-    if (currentActiveBanner) hideBannerEl();
-    return;
-  }
-
-  // Проверяем, не истёк ли таймер баннера
-  var elapsedSec = (currentTimeMs - active.timeshift) / 1000;
-  var timerTotal = parseInt(active.timer) || 0;
-  if (timerTotal > 0 && elapsedSec > timerTotal) {
-    if (currentActiveBanner) hideBannerEl();
-    return;
-  }
-
-  var timeLeftSec = Math.max(0, Math.ceil(timerTotal - elapsedSec));
-
-  // Показать новый баннер или обновить обратный отсчёт
-  if (!currentActiveBanner || currentActiveBanner.timeshift !== active.timeshift) {
-    showBannerEl(active, timeLeftSec);
-  } else {
-    updateCountdown(timeLeftSec);
-  }
-}
-
-// ============================
-// Инициализация плеера через player.js (Embedly)
-// ============================
-var iframe = document.getElementById('kplayer');
-var player = new playerjs.Player(iframe);
-
-player.on('ready', function() {
-  // Слушаем прогресс воспроизведения видео
-  player.on('timeupdate', function(data) {
-    if (data && typeof data.seconds === 'number') {
-      evaluateBannersAtTime(data.seconds);
-    }
-  });
-
-  // Слушаем перемотку
-  player.on('seeked', function(data) {
-    if (data && typeof data.seconds === 'number') {
-      evaluateBannersAtTime(data.seconds);
-    }
-  });
-});
-</script>
 </body>
 </html>
